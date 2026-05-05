@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSONAPP</title>
+    <style>
+        :root {
+            --bg: #050505; --sidebar: #0f0f0f; --accent: #00f2ff;
+            --text: #ffffff; --border: rgba(0, 242, 255, 0.2);
+            --html-c: #ff4d4d; --css-c: #4d94ff; --js-c: #ffdb4d;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        
+        body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+
+        /* SIDEBAR */
+        .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 25px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+        
+        /* LOGO: OSON (oq), APP (ko'k), Italy (kursiv) */
+        .logo { font-size: 28px; font-weight: 900; font-style: italic; margin-bottom: 40px; letter-spacing: -1px; }
+        .logo .oson { color: #ffffff; }
+        .logo .app { color: var(--accent); }
+
+        .nav { display: flex; flex-direction: column; gap: 10px; }
+        .nav-btn { 
+            padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.3s; 
+            color: #888; border: 1px solid transparent; display: flex; align-items: center; gap: 10px;
+        }
+        .nav-btn:hover, .nav-btn.active { background: rgba(0, 242, 255, 0.1); color: var(--accent); border-color: var(--border); }
+
+        /* MAIN */
+        .main { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at center, #111, #050505); }
+        .header { height: 70px; padding: 0 30px; display: flex; align-items: center; border-bottom: 1px solid var(--border); font-size: 18px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+
+        .content { flex: 1; display: none; padding: 25px; }
+        .content.active { display: flex; flex-direction: column; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        /* LIVE MATH */
+        .math-card { max-width: 550px; margin: auto; background: rgba(255,255,255,0.03); padding: 50px; border-radius: 30px; border: 1px solid var(--border); backdrop-filter: blur(10px); text-align: center; }
+        input { width: 100%; padding: 20px; background: #000; border: 2px solid var(--border); color: var(--accent); border-radius: 15px; font-size: 24px; text-align: center; outline: none; margin-bottom: 20px; transition: 0.3s; }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); }
+        #res { font-size: 50px; font-weight: 900; color: var(--accent); text-shadow: 0 0 15px var(--accent); }
+
+        /* LIVE IDE */
+        .ide-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: 100%; }
+        .editors { display: flex; flex-direction: column; gap: 12px; }
+        .edit-box { flex: 1; display: flex; flex-direction: column; background: #000; border-radius: 15px; border: 1px solid var(--border); overflow: hidden; }
+        .edit-box label { font-size: 11px; padding: 5px 15px; background: rgba(255,255,255,0.05); font-weight: bold; }
+        textarea { flex: 1; background: transparent; color: #fff; border: none; padding: 15px; resize: none; outline: none; font-family: 'Consolas', monospace; font-size: 14px; }
+        .preview { background: white; border-radius: 15px; overflow: hidden; border: 5px solid #222; }
+        iframe { width: 100%; height: 100%; border: none; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="logo"><span class="oson">OSON</span><span class="app">APP</span></div>
+    <div class="nav">
+        <div class="nav-btn active" onclick="tab('math', this)">📐 HISOB-KITOB</div>
+        <div class="nav-btn" onclick="tab('ide', this)">💻 DASTURLASH</div>
+        <div class="nav-btn" onclick="tab('google', this)">🔍 GOOGLE</div>
+        <div class="nav-btn" onclick="tab('wiki', this)">📚 WIKIPEDIA</div>
+    </div>
+</div>
+
+<div class="main">
+    <div class="header" id="title">HISOB-KITOB</div>
+
+    <div id="math" class="content active">
+        <div class="math-card">
+            <input type="text" id="mIn" placeholder="Misol: 5! + log(100)" oninput="solve()">
+            <div id="res">0</div>
+        </div>
+    </div>
+
+    <div id="ide" class="content">
+        <div class="ide-container">
+            <div class="editors">
+                <div class="edit-box" style="border-left: 5px solid var(--html-c);"><label style="color:var(--html-c)">HTML</label><textarea id="h" oninput="run()"><h1>Salom</h1></textarea></div>
+                <div class="edit-box" style="border-left: 5px solid var(--css-c);"><label style="color:var(--css-c)">CSS</label><textarea id="c" oninput="run()">h1 { color: #00f2ff; text-align: center; }</textarea></div>
+                <div class="edit-box" style="border-left: 5px solid var(--js-c);"><label style="color:var(--js-c)">JS</label><textarea id="j" oninput="run()">console.log('OSONAPP Ready');</textarea></div>
+            </div>
+            <div class="preview"><iframe id="out"></iframe></div>
+        </div>
+    </div>
+
+    <div id="google" class="content" style="padding:0;">
+        <iframe src="https://www.google.com/search?igu=1" style="background:white;"></iframe>
+    </div>
+
+    <div id="wiki" class="content" style="padding:0;">
+        <iframe src="https://uz.wikipedia.org" style="background:white;"></iframe>
+    </div>
+</div>
+
+<script>
+    function tab(id, el) {
+        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        el.classList.add('active');
+        document.getElementById('title').innerText = el.innerText;
+        if(id === 'ide') run();
+    }
+
+    // MATH LOGIC (Faktorial va Log tuzatilgan)
+    function solve() {
+        let val = document.getElementById('mIn').value.toLowerCase().replace(/\s+/g, '');
+        const r = document.getElementById('res');
+        if(!val) { r.innerText = "0"; return; }
+        try {
+            val = val.replace(/(\d+)!/g, (m, n) => {
+                let f = 1; for(let i=1; i<=n; i++) f *= i; return f;
+            });
+            val = val.replace(/log\((.*?)\)/g, (m, n) => `Math.log10(${n})`);
+            val = val.replace(/\^/g, '**');
+            let result = eval(val);
+            r.innerText = Number.isInteger(result) ? result : result.toFixed(3);
+            r.style.color = "var(--accent)";
+        } catch(e) { r.innerText = "XATO"; r.style.color = "#ff4d4d"; }
+    }
+
+    // IDE LOGIC (Live update)
+    function run() {
+        const h = document.getElementById('h').value;
+        const c = "<style>" + document.getElementById('c').value + "</style>";
+        const j = "<script>" + document.getElementById('j').value + "<\/script>";
+        const target = document.getElementById('out').contentWindow.document;
+        target.open(); target.write(h + c + j); target.close();
+    }
+
+    window.onload = run;
+</script>
+
+</body>
+</html>
